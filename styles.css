@@ -1,0 +1,1945 @@
+/*
+投资插件样式
+*/
+
+.inv-record-block {
+	margin: 8px 0;
+}
+
+.inv-summary {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+	gap: 6px 12px;
+	margin-bottom: 12px;
+}
+
+.inv-stat {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding: 8px 10px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 8px;
+	background: var(--background-secondary);
+}
+
+/* 可点击统计卡片：悬停反馈，暗示可交互 */
+.inv-stat-clickable {
+	cursor: pointer;
+	transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.inv-stat-clickable:hover {
+	background: var(--background-modifier-hover);
+	border-color: var(--background-modifier-border-hover);
+}
+
+.inv-stat-value {
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-stat-label {
+	font-size: 0.8em;
+	color: var(--text-muted);
+}
+
+.inv-stat-sub {
+	font-size: 0.75em;
+	color: var(--text-faint);
+}
+
+.inv-record-table table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.9em;
+}
+
+.inv-record-table th,
+.inv-record-table td {
+	padding: 3px 6px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	text-align: left;
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-badge {
+	display: inline-block;
+	padding: 1px 6px;
+	border-radius: 4px;
+	font-size: 0.8em;
+}
+
+.inv-badge-buy {
+	color: var(--text-error);
+	background: color-mix(in srgb, var(--text-error) 12%, transparent);
+}
+
+.inv-badge-sell {
+	color: var(--text-success);
+	background: color-mix(in srgb, var(--text-success) 12%, transparent);
+}
+
+.inv-badge-div {
+	color: var(--text-accent);
+	background: color-mix(in srgb, var(--text-accent) 12%, transparent);
+}
+
+.inv-ops {
+	white-space: nowrap;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.inv-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 6px;
+	margin-bottom: 6px;
+}
+
+.inv-btn {
+	background: var(--background-modifier-hover);
+	border-radius: 6px;
+	padding: 4px 12px;
+	cursor: pointer;
+	font-size: 0.9em;
+	color: var(--text-normal);
+}
+
+.inv-btn:hover {
+	background: var(--background-modifier-border-hover);
+}
+
+.inv-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+}
+
+.inv-icon-btn svg {
+	width: 16px;
+	height: 16px;
+}
+
+.inv-buy {
+	color: var(--text-error) !important;
+}
+
+.inv-sell {
+	color: var(--text-success) !important;
+}
+
+.inv-div {
+	color: var(--text-accent) !important;
+}
+
+.inv-import-text {
+	width: 100%;
+	resize: vertical;
+	margin: 8px 0;
+	font-family: var(--font-monospace);
+	font-size: 0.85em;
+}
+
+.inv-search-input {
+	width: 100%;
+	margin-bottom: 8px;
+}
+
+.inv-search-results {
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.inv-search-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	padding: 6px 8px;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.inv-search-row:hover {
+	background: var(--background-modifier-hover);
+}
+
+.inv-search-name {
+	font-weight: 600;
+}
+
+.inv-search-code {
+	color: var(--text-muted);
+	font-family: var(--font-monospace);
+	font-size: 0.85em;
+}
+
+.inv-sb-seg {
+	margin-right: 12px;
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-sb-label {
+	margin-right: 4px;
+	color: var(--text-muted);
+}
+
+/* 状态栏：未处理买卖信号数字徽标（点击弹出处理弹窗） */
+.inv-sb-signal {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	margin-right: 12px;
+	padding: 0 7px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--interactive-accent) 18%, transparent);
+	color: var(--interactive-accent);
+	cursor: pointer;
+	font-variant-numeric: tabular-nums;
+	user-select: none;
+}
+
+.inv-sb-signal:hover {
+	background: color-mix(in srgb, var(--interactive-accent) 30%, transparent);
+}
+
+.inv-sb-signal svg {
+	width: 12px;
+	height: 12px;
+}
+
+.inv-sb-signal-count {
+	font-weight: 700;
+	font-size: 0.95em;
+}
+
+.inv-sb-extra {
+	margin-right: 8px;
+	color: var(--text-muted);
+}
+
+/* 状态栏：有持仓但行情不可用的股票点名 */
+.inv-sb-missing {
+	color: var(--text-warning);
+}
+
+/* 加载失败的基金提示：汇总卡底部 / 状态栏单行，操作弹窗与侧栏用块级提示 */
+.inv-failure-line {
+	margin-right: 8px;
+	color: var(--text-warning);
+	cursor: pointer;
+}
+
+.inv-fund-failures {
+	margin-top: 10px;
+	padding-top: 8px;
+	border-top: 1px solid var(--background-modifier-border);
+	font-size: 0.9em;
+}
+
+.inv-failure-retry {
+	margin-left: 8px;
+	padding: 0 2px;
+	border: none;
+	background: none;
+	box-shadow: none;
+	color: var(--text-muted);
+	font-size: 0.9em;
+	cursor: pointer;
+}
+
+.inv-failure-retry:hover {
+	color: var(--text-normal);
+	text-decoration: underline;
+}
+
+.inv-failure-notice {
+	margin: 8px 0 10px;
+	padding: 8px 10px;
+	border: 1px solid var(--background-modifier-border);
+	border-left: 3px solid var(--text-warning);
+	border-radius: 6px;
+	background: color-mix(in srgb, var(--text-warning) 6%, var(--background-secondary));
+	font-size: 0.9em;
+}
+
+.inv-failure-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 4px;
+	color: var(--text-warning);
+}
+
+.inv-failure-item {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 2px 0;
+	cursor: pointer;
+}
+
+.inv-failure-item:hover .inv-failure-name {
+	text-decoration: underline;
+}
+
+.inv-failure-name {
+	color: var(--text-normal);
+}
+
+.inv-failure-reason {
+	color: var(--text-muted);
+}
+
+.inv-fund-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+/* 全部基金视图顶部的"总资产"汇总卡片（对齐 invest-app 移动端） */
+.inv-fund-summary {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 12px;
+	padding: 14px 16px;
+	margin-bottom: 10px;
+	background: linear-gradient(
+		135deg,
+		var(--background-secondary) 0%,
+		color-mix(in srgb, var(--text-error) 7%, transparent) 100%
+	);
+}
+
+.inv-fund-summary-top {
+	margin-bottom: 8px;
+}
+
+.inv-fund-summary-title {
+	font-size: 0.78em;
+	font-weight: 500;
+	letter-spacing: 0.05em;
+	color: var(--text-muted);
+}
+
+.inv-fund-summary-assets {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.inv-fund-summary-total {
+	font-size: 1.65em;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	color: var(--text-normal);
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-fund-summary-today-group {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 4px;
+}
+
+.inv-fund-summary-label {
+	font-size: 0.72em;
+	font-weight: 500;
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-fund-summary-today {
+	font-size: 0.95em;
+	font-weight: 600;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-fund-summary-rate {
+	font-size: 0.72em;
+	font-weight: 500;
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-fund-summary-foot {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 10px;
+	flex-wrap: wrap;
+}
+
+.inv-fund-summary-text {
+	font-size: 0.72em;
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+/* 汇总卡口径说明：含股票时的统计范围与无行情股票点名 */
+.inv-fund-summary-notes {
+	margin-top: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.inv-fund-summary-note {
+	font-size: 0.72em;
+	line-height: 1.4;
+	color: var(--text-muted);
+}
+
+.inv-fund-summary-note.is-warning {
+	color: var(--text-warning);
+}
+
+.inv-fund-card {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 10px;
+	padding: 12px;
+	cursor: pointer;
+	transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.inv-fund-card:hover {
+	border-color: var(--interactive-accent);
+	background: var(--background-modifier-hover);
+}
+
+.inv-fund-card-top {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.inv-fund-card-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.inv-fund-card-name {
+	font-weight: 600;
+	font-size: 0.92em;
+	line-height: 1.3;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.inv-fund-card-code {
+	font-family: var(--font-monospace);
+	font-size: 0.78em;
+	color: var(--text-muted);
+	margin-top: 2px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.inv-fund-card-held {
+	font-weight: 600;
+	color: var(--text-normal);
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-fund-card-spark {
+	flex-shrink: 0;
+}
+
+.inv-fund-card-stats {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+}
+
+.inv-fund-card-cell {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.inv-fund-card-label {
+	font-size: 0.75em;
+	color: var(--text-muted);
+}
+
+.inv-fund-card-value {
+	font-size: 0.9em;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-fund-card-value.held {
+	color: var(--text-normal);
+}
+
+.inv-import-summary {
+	margin: 8px 0;
+}
+
+.inv-import-preview {
+	margin-top: 6px;
+	border-top: 1px solid var(--background-modifier-border);
+	padding-top: 6px;
+	font-size: 0.85em;
+}
+
+.inv-preview-row {
+	margin: 2px 0;
+}
+
+.inv-hint {
+	color: var(--text-muted);
+	font-size: 0.9em;
+}
+
+.inv-attr-off {
+	color: var(--text-faint);
+}
+
+.inv-attr-warn {
+	color: var(--text-warning);
+}
+
+.inv-attr-suggest {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.inv-attr-suggest-name {
+	font-family: var(--font-monospace);
+}
+
+.inv-attr-suggest-desc {
+	color: var(--text-muted);
+	font-size: 0.9em;
+}
+
+.inv-empty {
+	color: var(--text-muted);
+	text-align: center;
+	padding: 8px;
+}
+
+.inv-view-title {
+	margin-bottom: 10px;
+}
+
+.inv-view-name {
+	font-size: 1.1em;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.inv-view-sub {
+	font-size: 0.85em;
+	color: var(--text-muted);
+	margin-top: 2px;
+}
+
+.inv-section-title {
+	font-weight: 600;
+	margin: 14px 0 6px;
+	border-left: 3px solid var(--interactive-accent);
+	padding-left: 8px;
+}
+
+.inv-nav-chart {
+	width: 100%;
+	height: 150px;
+}
+
+.inv-nav-line {
+	fill: none;
+	stroke: var(--interactive-accent);
+	stroke-width: 1.5;
+	vector-effect: non-scaling-stroke;
+}
+
+.inv-nav-area {
+	fill: color-mix(in srgb, var(--interactive-accent) 16%, transparent);
+	stroke: none;
+}
+
+.inv-nav-label {
+	font-family: var(--font-monospace);
+}
+
+.inv-nav-date {
+	font-size: 0.8em;
+	color: var(--text-muted);
+	text-align: right;
+}
+
+/* 净值走势 / 收益走势 卡片（复刻 invest-app 移动端样式） */
+.inv-chart-cards {
+	margin-bottom: 10px;
+}
+
+.inv-chart-card {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 12px;
+	overflow: hidden;
+	background: var(--background-primary);
+}
+
+.inv-chart-card + .inv-chart-card {
+	margin-top: 10px;
+}
+
+.inv-chart-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 10px 12px 2px;
+}
+
+.inv-chart-head-left {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+}
+
+.inv-chart-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: var(--text-muted);
+	border-radius: 6px;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.inv-chart-icon-btn:hover {
+	color: var(--text-normal);
+	background: var(--background-modifier-hover);
+}
+
+.inv-chart-icon-btn svg {
+	width: 13px;
+	height: 13px;
+}
+
+.inv-chart-title {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	color: var(--text-normal);
+}
+
+.inv-chart-tabs {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	padding: 2px;
+	background: var(--background-secondary);
+	border-radius: 9999px;
+}
+
+.inv-chart-tab {
+	border: none;
+	background: transparent;
+	border-radius: 9999px;
+	padding: 2px 9px;
+	font-size: 10px;
+	font-weight: 500;
+	color: var(--text-muted);
+	cursor: pointer;
+	line-height: 1.5;
+}
+
+.inv-chart-tab:hover {
+	color: var(--text-normal);
+}
+
+.inv-chart-tab.active {
+	background: var(--background-primary);
+	color: var(--text-normal);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.inv-chart-body {
+	height: 200px;
+	width: 100%;
+}
+
+.inv-chart-empty {
+	margin: 0;
+	padding: 56px 0;
+	text-align: center;
+	color: var(--text-muted);
+	font-size: 0.9em;
+}
+
+/* ---------- 通道分析弹窗 ---------- */
+.inv-channel-modal {
+	width: min(880px, 92vw);
+	height: 74vh;
+	max-height: 74vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.inv-channel-modal .modal-content {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: 0;
+}
+
+/* 左栏基金列表 + 右栏指标分析 */
+.inv-channel-layout {
+	display: flex;
+	flex: 1;
+	min-height: 0;
+	gap: 12px;
+}
+
+.inv-channel-sidebar {
+	flex: 0 0 148px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	overflow-y: auto;
+	padding-right: 8px;
+	border-right: 1px solid var(--background-modifier-border);
+}
+
+.inv-channel-sidebar-hint {
+	font-size: 11px;
+	color: var(--text-muted);
+	padding: 6px 2px;
+}
+
+.inv-channel-fund-item {
+	font-size: 12px;
+	line-height: 1.4;
+	padding: 5px 8px;
+	border-radius: 6px;
+	color: var(--text-secondary);
+	cursor: pointer;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+.inv-channel-fund-item:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.inv-channel-fund-item.active {
+	background: var(--background-modifier-active-hover, var(--background-modifier-hover));
+	color: var(--text-normal);
+	font-weight: 600;
+}
+
+.inv-channel-main {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+}
+
+/* 右栏页签（复用 .inv-chart-tabs 药丸样式）与两个视图面板 */
+.inv-channel-tabs {
+	margin-bottom: 10px;
+}
+
+/* 弹窗内页签加大加粗，比笔记内小药丸更醒目（仅作用于弹窗，不影响 .inv-chart-tab 既有使用处） */
+.inv-channel-tabs .inv-chart-tab {
+	font-size: 12px;
+	padding: 4px 16px;
+	font-weight: 600;
+	color: var(--text-secondary);
+}
+
+.inv-channel-tabs .inv-chart-tab.active {
+	color: var(--text-normal);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+.inv-channel-tabs.is-hidden {
+	display: none;
+}
+
+.inv-channel-pane {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: 0;
+}
+
+.inv-channel-pane.is-hidden {
+	display: none;
+}
+
+/* 持仓分析：说明 + PE/PB 两张图，超高时内部滚动 */
+.inv-channel-pane-holdings {
+	overflow-y: auto;
+}
+
+.inv-channel-holdings-hint {
+	font-size: 10px;
+	color: var(--text-muted);
+	padding: 2px 2px 8px;
+}
+
+.inv-holdings-chart {
+	position: relative;
+	height: 200px;
+	width: 100%;
+	flex: 0 0 auto;
+}
+
+/* 手动补充 + 对比分析：合并为置顶控制行（窄宽度自动换行） */
+.inv-holdings-control {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+	padding: 0 2px 8px;
+}
+
+.inv-holdings-control-sep {
+	width: 1px;
+	height: 14px;
+	background: var(--background-modifier-border);
+	margin: 0 2px;
+}
+
+.inv-holdings-manual-label {
+	font-size: 10px;
+	color: var(--text-muted);
+}
+
+/* 安全度分析：谨慎/激进两档 + PE/PB/PE×PB 三个子项 */
+.inv-holdings-safety {
+	padding: 0 2px 10px;
+}
+
+.inv-holdings-safety-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	margin-bottom: 6px;
+}
+
+.inv-holdings-safety-title {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.inv-holdings-safety-scope {
+	font-size: 10px;
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-holdings-safety-grid {
+	display: grid;
+	grid-template-columns: 116px repeat(3, minmax(0, 1fr));
+	gap: 8px;
+}
+
+.inv-holdings-safety-card {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	padding: 9px 10px 10px;
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+}
+
+.inv-holdings-safety-card-head {
+	display: flex;
+	justify-content: space-between;
+	gap: 4px;
+	font-size: 11px;
+	color: var(--text-normal);
+	margin-bottom: 6px;
+}
+
+.inv-holdings-safety-weight {
+	color: var(--text-faint);
+}
+
+/* 总分块：谨慎 / 激进各一套分数 + 等级标签 */
+.inv-holdings-safety-tier + .inv-holdings-safety-tier {
+	margin-top: 8px;
+}
+
+.inv-holdings-safety-tier-label {
+	font-size: 10px;
+	color: var(--text-muted);
+	margin-bottom: 1px;
+}
+
+.inv-holdings-safety-tier-value {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	line-height: 1.2;
+	white-space: nowrap;
+}
+
+.inv-holdings-safety-score {
+	font-size: 17px;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	color: var(--s-color, var(--text-normal));
+}
+
+.inv-holdings-safety-was {
+	font-size: 11px;
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-holdings-safety-pill {
+	font-size: 10px;
+	line-height: 1.5;
+	padding: 0 5px;
+	border-radius: 4px;
+	color: var(--s-color, var(--text-muted));
+	background: color-mix(in srgb, var(--s-color, var(--text-muted)) 14%, transparent);
+}
+
+.inv-holdings-safety-bar {
+	height: 4px;
+	margin-top: 6px;
+	border-radius: 2px;
+	overflow: hidden;
+	background: var(--background-modifier-border);
+}
+
+.inv-holdings-safety-fill {
+	height: 100%;
+	border-radius: 2px;
+	background: var(--s-color, var(--text-muted));
+}
+
+/* 子项行：谨慎/激进各一行（当时→当前占比 + 只数） */
+.inv-holdings-safety-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 4px;
+	font-size: 11px;
+	line-height: 1.4;
+	white-space: nowrap;
+}
+
+/* 两组的间隔：DOM 为 row→bar→row→bar 交错排列，第二组起始用 bar + row 定位。
+   注意不能写 .row + .row——中间隔着进度条，相邻兄弟选择器不会命中。 */
+.inv-holdings-safety-bar + .inv-holdings-safety-row {
+	margin-top: 18px;
+}
+
+.inv-holdings-safety-row-label {
+	color: var(--text-muted);
+}
+
+.inv-holdings-safety-row-value {
+	font-variant-numeric: tabular-nums;
+	color: var(--text-normal);
+}
+
+.inv-holdings-safety-pct {
+	color: var(--s-color, var(--text-normal));
+}
+
+.inv-holdings-safety-count {
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+/* 覆盖度：该指标有效市值占全部持仓市值，不足 100% 才渲染 */
+.inv-holdings-safety-coverage {
+	margin-top: auto;
+	padding-top: 6px;
+	font-size: 10px;
+	color: var(--text-faint);
+	font-variant-numeric: tabular-nums;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+/* 安全度色阶：≥75 安全 / 50–74 中性 / 25–49 偏险 / <25 危险 */
+.inv-level-safe {
+	--s-color: #1d9e75;
+}
+
+.inv-level-neutral {
+	--s-color: #fac775;
+}
+
+.inv-level-risky {
+	--s-color: #d85a30;
+}
+
+.inv-level-danger {
+	--s-color: #e24b4a;
+}
+
+/* 浅色主题下同色系加深，保证在浅底上的对比度 */
+.theme-light .inv-level-safe {
+	--s-color: #0f6e56;
+}
+
+.theme-light .inv-level-neutral {
+	--s-color: #8a6508;
+}
+
+.theme-light .inv-level-risky {
+	--s-color: #b4471f;
+}
+
+.theme-light .inv-level-danger {
+	--s-color: #b02b2b;
+}
+
+/* 对比分析入口行 */
+.inv-holdings-compare-date {
+	font-size: 10px;
+	padding: 2px 6px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+}
+
+.inv-holdings-compare-active {
+	font-size: 10px;
+	color: var(--text-accent);
+	font-variant-numeric: tabular-nums;
+}
+
+/* 手动补充持仓编辑弹窗 */
+.inv-holding-edit-modal {
+	width: min(540px, 92vw);
+}
+
+.inv-holding-edit-title {
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--text-normal);
+	margin-bottom: 10px;
+}
+
+.inv-holding-edit-search {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 8px;
+}
+
+.inv-holding-edit-search-input {
+	flex: 1;
+	font-size: 12px;
+	padding: 3px 8px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+}
+
+.inv-holding-edit-results {
+	max-height: 180px;
+	overflow-y: auto;
+	margin-bottom: 10px;
+}
+
+.inv-holding-edit-result {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 3px 6px;
+	border-radius: 6px;
+	cursor: default;
+}
+
+.inv-holding-edit-result:hover {
+	background: var(--background-modifier-hover);
+}
+
+.inv-holding-edit-result-name {
+	flex: 1;
+	font-size: 12px;
+	color: var(--text-normal);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.inv-holding-edit-result-code {
+	font-size: 11px;
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-holding-edit-table {
+	border-top: 1px solid var(--background-modifier-border);
+	padding-top: 6px;
+	margin-bottom: 10px;
+	min-height: 40px;
+	max-height: 260px;
+	overflow-y: auto;
+}
+
+.inv-holding-edit-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 3px 2px;
+}
+
+.inv-holding-edit-code {
+	font-size: 11px;
+	color: var(--text-secondary);
+	font-variant-numeric: tabular-nums;
+	width: 52px;
+}
+
+.inv-holding-edit-name {
+	flex: 1;
+	font-size: 12px;
+	color: var(--text-normal);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.inv-holding-edit-ratio {
+	width: 70px;
+	font-size: 11px;
+	text-align: right;
+	padding: 2px 6px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-holding-edit-foot {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.inv-holding-edit-hint {
+	font-size: 11px;
+	color: var(--text-muted);
+	padding: 4px 2px;
+}
+
+/* 弹窗头部行（定投对比弹窗等复用） */
+.inv-channel-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+
+.inv-channel-title {
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: var(--text-normal);
+	margin-bottom: 4px;
+}
+
+.inv-channel-header .inv-channel-title {
+	margin-bottom: 0;
+}
+
+/* 窄屏降级：左栏转为顶部横向滚动列表，保证右栏图表可用 */
+@media (max-width: 720px) {
+	.inv-channel-layout {
+		flex-direction: column;
+	}
+
+	.inv-channel-sidebar {
+		flex: 0 0 auto;
+		flex-direction: row;
+		overflow-x: auto;
+		overflow-y: hidden;
+		border-right: none;
+		border-bottom: 1px solid var(--background-modifier-border);
+		padding-right: 0;
+		padding-bottom: 6px;
+	}
+
+	.inv-channel-fund-item {
+		flex: 0 0 auto;
+	}
+}
+
+.inv-modal-params {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 20px;
+	padding: 8px 2px 10px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	margin-bottom: 4px;
+}
+
+.inv-channel-chart {
+	flex: 1;
+	min-height: 260px;
+	height: auto !important;
+}
+
+.inv-chart-field {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	padding: 4px 0;
+	min-width: 100px;
+}
+
+.inv-chart-field-label {
+	font-size: 10px;
+	color: var(--text-muted);
+}
+
+.inv-chart-select {
+	font-size: 11px;
+	padding: 2px 6px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+}
+
+.inv-chart-number-input {
+	width: 68px;
+	font-size: 11px;
+	text-align: right;
+	padding: 2px 6px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+	font-variant-numeric: tabular-nums;
+}
+
+/* 输入框 + 快捷选择同行的横向行 */
+.inv-chart-line {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.inv-chart-line .inv-chart-presets {
+	margin-top: 0;
+}
+
+.inv-chart-presets {
+	display: flex;
+	gap: 4px;
+	margin-top: 2px;
+}
+
+.inv-chart-preset {
+	border: none;
+	padding: 1px 7px;
+	font-size: 10px;
+	font-weight: 500;
+	border-radius: 6px;
+	background: var(--background-secondary);
+	color: var(--text-secondary);
+	cursor: pointer;
+	line-height: 1.5;
+}
+
+.inv-chart-preset:hover {
+	color: var(--text-normal);
+}
+
+.inv-chart-field-hint {
+	font-size: 10px;
+	color: var(--text-muted);
+	margin-top: 1px;
+}
+
+.inv-chart-signal {
+	padding: 4px 2px 6px;
+}
+
+.inv-chart-signal-text {
+	display: inline-block;
+	font-size: 11px;
+	line-height: 1.55;
+	padding: 4px 10px;
+	border-radius: 8px;
+	background: var(--background-secondary);
+}
+
+.inv-chart-signal-text.muted {
+	color: var(--text-muted);
+}
+
+.inv-chart-signal-text.buy {
+	color: var(--text-error);
+	background: color-mix(in srgb, var(--text-error) 12%, transparent);
+}
+
+.inv-chart-signal-text.sell {
+	color: var(--text-success);
+	background: color-mix(in srgb, var(--text-success) 12%, transparent);
+}
+
+/* ---------- 定投对比弹窗 ---------- */
+.inv-dca-modal {
+	width: min(680px, 92vw);
+	height: 72vh;
+	max-height: 72vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.inv-dca-modal .modal-content {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+}
+
+.inv-dca-chart {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	min-height: 220px;
+	height: auto !important;
+}
+
+/* 图 2（收益差）较图 1 略矮，突出对比曲线而非净值，同时保证可容纳两图 */
+.inv-dca-chart + .inv-dca-chart {
+	flex: 1 1 auto;
+	min-height: 200px;
+}
+
+.inv-dca-chart-body {
+	flex: 1;
+	width: 100%;
+	min-height: 0;
+}
+
+/* ---------- 全部基金卡片：买卖信号徽标 ---------- */
+.inv-fund-card-signal {
+	display: inline-block;
+	margin-top: 4px;
+	padding: 1px 7px;
+	border-radius: 6px;
+	font-size: 0.72em;
+	font-weight: 600;
+	line-height: 1.5;
+}
+
+.inv-fund-card-signal.buy {
+	color: var(--text-error);
+	background: color-mix(in srgb, var(--text-error) 12%, transparent);
+}
+
+.inv-fund-card-signal.sell {
+	color: var(--text-success);
+	background: color-mix(in srgb, var(--text-success) 12%, transparent);
+}
+
+.inv-fund-card-signal.handled {
+	opacity: 0.5;
+}
+
+/* ---------- 买卖信号处理弹窗 ---------- */
+.inv-signal-modal {
+	width: min(1000px, 94vw);
+	height: 78vh;
+	max-height: 78vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.inv-signal-modal .modal-content {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: 0;
+}
+
+.inv-signal-layout {
+	display: flex;
+	gap: 14px;
+	flex: 1;
+	min-height: 0;
+}
+
+.inv-signal-main {
+	flex: 0 0 390px;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	padding-right: 14px;
+	border-right: 1px solid var(--background-modifier-border);
+}
+
+.inv-signal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 10px;
+}
+
+.inv-signal-title {
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: var(--text-normal);
+}
+
+.inv-signal-analyse {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: var(--text-muted);
+	border-radius: 6px;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.inv-signal-analyse:hover {
+	color: var(--text-normal);
+	background: var(--background-modifier-hover);
+}
+
+.inv-signal-analyse svg {
+	width: 14px;
+	height: 14px;
+}
+
+.inv-signal-list {
+	overflow-y: auto;
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.inv-signal-card {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 12px;
+	padding: 10px 12px;
+	background: var(--background-primary);
+}
+
+.inv-signal-card.unhandled {
+	border-color: var(--background-modifier-border-hover);
+}
+
+.inv-signal-card-head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.inv-signal-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
+.inv-signal-card-name-wrap {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.inv-signal-card-name {
+	font-weight: 600;
+	font-size: 12px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.inv-signal-card-code {
+	font-family: var(--font-monospace);
+	font-size: 10px;
+	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+.inv-signal-type,
+.inv-signal-status {
+	flex-shrink: 0;
+	font-size: 10px;
+	font-weight: 600;
+	padding: 2px 8px;
+	border-radius: 6px;
+}
+
+.inv-signal-status.confirmed {
+	color: var(--interactive-accent);
+	background: color-mix(in srgb, var(--interactive-accent) 12%, transparent);
+}
+
+.inv-signal-status.ignored {
+	color: var(--text-muted);
+	background: var(--background-secondary);
+}
+
+.inv-signal-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.inv-signal-row {
+	display: flex;
+	justify-content: space-between;
+	font-size: 11px;
+}
+
+.inv-signal-row-label {
+	color: var(--text-muted);
+}
+
+.inv-signal-row-value {
+	font-weight: 500;
+	font-family: var(--font-monospace);
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-signal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 8px;
+	padding-top: 8px;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.inv-signal-btn {
+	border: none;
+	font-size: 11px;
+	font-weight: 500;
+	padding: 4px 12px;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.inv-signal-btn:hover {
+	opacity: 0.85;
+}
+
+.inv-signal-btn.confirm {
+	color: #fff;
+}
+
+.inv-signal-btn.ignore {
+	background: var(--background-secondary);
+	color: var(--text-secondary);
+}
+
+.inv-signal-foot {
+	text-align: center;
+	font-size: 10px;
+	color: var(--text-muted);
+	padding: 2px 0 4px;
+}
+
+/* 信号弹窗右侧：所选基金的趋势通道 */
+.inv-signal-chart {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-height: 0;
+	/* 通道图下方追加持仓估值三图后内容超高，允许右列内部滚动 */
+	overflow-y: auto;
+}
+
+.inv-signal-chart-hint {
+	margin: auto;
+	font-size: 12px;
+	color: var(--text-muted);
+	padding: 40px 12px;
+	text-align: center;
+}
+
+.inv-signal-chart-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.inv-signal-chart-name {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text-normal);
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.inv-signal-chart-code {
+	font-family: var(--font-monospace);
+	font-size: 10px;
+	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+.inv-signal-chart-embed {
+	flex: 1;
+	min-height: 260px;
+}
+
+.inv-signal-chart-empty {
+	color: var(--text-muted);
+	font-size: 12px;
+	padding: 40px 12px;
+	margin: 0;
+	text-align: center;
+}
+
+/* 股票记录块头部：名称 + 代码 */
+.inv-stock-header {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.inv-stock-name {
+	font-size: 1.05em;
+	font-weight: 600;
+}
+
+.inv-stock-code {
+	font-family: var(--font-monospace);
+	font-size: 0.85em;
+	color: var(--text-muted);
+}
+
+/* ---------- 操作记录弹窗（近期/今日档共享） ---------- */
+.inv-today-body {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.inv-today-summary {
+	display: flex;
+	gap: 10px;
+}
+
+.inv-today-sum-item {
+	flex: 1;
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	padding: 8px 12px;
+	border-radius: 10px;
+	background: var(--background-secondary);
+}
+
+.inv-today-sum-label {
+	font-size: 12px;
+	color: var(--text-muted);
+}
+
+.inv-today-sum-count {
+	font-size: 11px;
+	color: var(--text-faint);
+}
+
+.inv-today-sum-amount {
+	margin-left: auto;
+	font-size: 13px;
+	font-weight: 600;
+	font-family: var(--font-monospace);
+	font-variant-numeric: tabular-nums;
+}
+
+.inv-today-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.9em;
+}
+
+.inv-today-table th,
+.inv-today-table td {
+	padding: 5px 8px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	text-align: left;
+	vertical-align: middle;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.inv-today-table th {
+	font-size: 0.9em;
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.inv-today-row {
+	cursor: pointer;
+}
+
+.inv-today-row:hover {
+	background: var(--background-modifier-hover);
+}
+
+.inv-today-kind {
+	display: inline-block;
+	margin-right: 6px;
+	padding: 1px 5px;
+	border-radius: 4px;
+	font-size: 10px;
+	color: var(--text-muted);
+	background: var(--background-modifier-border);
+}
+
+.inv-today-name {
+	margin-right: 6px;
+	font-weight: 600;
+}
+
+.inv-today-code {
+	font-family: var(--font-monospace);
+	font-size: 10px;
+	color: var(--text-muted);
+}
+
+.inv-today-amount {
+	font-weight: 600;
+}
+
+.inv-today-note {
+	white-space: normal;
+	color: var(--text-muted);
+}
+
+.inv-today-foot {
+	margin: 0;
+}
+
+/* ---------- 近期操作弹窗 ---------- */
+.inv-recent-trades-modal {
+	width: min(900px, 94vw);
+}
+
+.inv-recent-trades-modal .modal-content {
+	max-height: 70vh;
+	overflow-y: auto;
+}
+
+.inv-recent-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.inv-recent-ranges {
+	display: flex;
+	gap: 4px;
+}
+
+.inv-recent-range-btn {
+	padding: 3px 10px;
+	font-size: 12px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	background: var(--background-secondary);
+	color: var(--text-muted);
+	cursor: pointer;
+	box-shadow: none;
+}
+
+.inv-recent-range-btn:hover {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
+.inv-recent-range-btn.is-active {
+	background: var(--interactive-accent);
+	border-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.inv-recent-window {
+	margin-left: auto;
+	font-family: var(--font-monospace);
+	font-size: 11px;
+	color: var(--text-faint);
+}
+
+.inv-recent-trade-btn {
+	padding: 3px 10px;
+	font-size: 12px;
+}
+
+.inv-recent-day {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.inv-recent-day-head {
+	display: flex;
+	align-items: baseline;
+	gap: 6px;
+	padding-top: 4px;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.inv-recent-date {
+	font-family: var(--font-monospace);
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.inv-recent-today-tag {
+	padding: 0 5px;
+	border-radius: 4px;
+	font-size: 10px;
+	color: var(--text-on-accent);
+	background: var(--interactive-accent);
+}
+
+.inv-recent-day-count {
+	font-size: 11px;
+	color: var(--text-faint);
+}
+
+/* ---------- 统一加减仓弹窗 ---------- */
+.inv-position-modal {
+	width: min(460px, 92vw);
+}
+
+.inv-position-target-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 10px;
+	padding: 8px 10px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 8px;
+}
+
+.inv-position-target-label {
+	flex: 0 0 auto;
+	font-weight: 600;
+}
+
+.inv-position-target-body {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+}
+
+.inv-position-target-name {
+	font-weight: 600;
+}
+
+.inv-position-target-code {
+	font-family: var(--font-monospace);
+	font-size: 0.85em;
+	color: var(--text-muted);
+}
+
+.inv-position-target-change {
+	margin-left: auto;
+	padding: 2px 10px;
+	font-size: 0.85em;
+	color: var(--text-muted);
+	background: var(--background-modifier-hover);
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.inv-position-target-change:hover {
+	color: var(--text-normal);
+	background: var(--background-modifier-border-hover);
+}
+
+.inv-position-form .setting-item:last-child {
+	border-bottom: none;
+}
+
+/* 日期控件：原生 date 输入，固定宽度以与其余输入框对齐 */
+.inv-position-form .inv-date-input {
+	width: 160px;
+}
+
+/* ---------- 标的选择弹窗 ---------- */
+.inv-position-picker-modal {
+	width: min(520px, 92vw);
+}
+
+.inv-position-picker-modal .modal-content {
+	max-height: 70vh;
+	overflow-y: auto;
+}
+
+.inv-picker-group {
+	margin: 10px 0 4px;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.inv-picker-kind {
+	flex: 0 0 auto;
+	padding: 1px 6px;
+	border-radius: 4px;
+	font-size: 10px;
+	color: var(--text-muted);
+	background: var(--background-modifier-border);
+}

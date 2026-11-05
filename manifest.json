@@ -1,0 +1,9 @@
+{
+	"id": "obsidian-investment",
+	"name": "Investment Tracker",
+	"version": "0.1.0",
+	"minAppVersion": "1.7.2",
+	"description": "在笔记中记录基金买卖记录并统计收益，打开基金笔记时自动在侧栏展示持仓收益与净值走势（数据源：stock-sdk）。",
+	"author": "bugstack27",
+	"isDesktopOnly": false
+}

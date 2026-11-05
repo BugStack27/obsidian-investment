@@ -32,8 +32,8 @@ const KIND_LABEL: Record<PositionTarget['kind'], string> = { fund: '基金', sto
 /**
  * 统一加减仓弹窗：新增「加减仓」命令、笔记按钮、买卖信号确认、表格行编辑的共同入口。
  * - 目标：未锁定时经 `PositionTargetModal` 从全库基金/股票笔记中选择；锁定时静态展示；
- * - 类型：买入（加仓）/ 卖出（减仓）/ 分红（现金到账，仅基金目标出现）；
- * - 字段组按目标 kind 切换：基金 = 金额 + 份额（分红时隐藏份额）；股票 = 数量 + 价格；
+ * - 类型：买入（加仓）/ 卖出（减仓）/ 分红（现金到账，基金与股票目标均可）；
+ * - 字段组按目标 kind 与类型切换：基金 = 金额 + 份额（分红只填金额）；股票 = 数量 + 价格（分红只填金额）；
  * - 基金卖出时按当日估值（缺失时回退最新净值）实时预估到账金额；
  * - 保存经 `onSave(tx, target)` 交回调用方写盘（新增 = 追加记录行，编辑 = 替换该行）。
  */
@@ -111,8 +111,8 @@ export class PositionTradeModal extends Modal {
 		this.navUnsub = this.plugin.store.subscribe((s) => {
 			if (s.change === 'estimate' || s.change === 'full') void this.refreshNav();
 		});
-		// 命令等场景预选股票但无预填价：异步拉一次行情补默认成交价（失败静默留空）
-		if (this.target && this.target.kind === 'stock' && !this.priceTouched) {
+		// 命令等场景预选股票但无预填价：异步拉一次行情补默认成交价（失败静默留空）；分红只填金额，不预填价格
+		if (this.target && this.target.kind === 'stock' && this.type !== 'dividend' && !this.priceTouched) {
 			void this.prefillPrice(this.target);
 		}
 	}
@@ -180,13 +180,12 @@ export class PositionTradeModal extends Modal {
 
 	private openPicker(): void {
 		new PositionTargetModal(this.app, (t) => {
-			// 股票目标不适用分红；kind 变化时字段组与标题随 renderAll 重建
-			if (t.kind === 'stock' && this.type === 'dividend') this.type = 'buy';
+			// kind 变化时字段组与标题随 renderAll 重建
 			const prevKind = this.target?.kind;
 			this.target = t;
 			// 目标换了，旧标的的净值不能继续用于预估；等 refreshNav 重新解析
 			this.nav = null;
-			if (t.kind === 'stock' && !this.priceTouched) {
+			if (t.kind === 'stock' && this.type !== 'dividend' && !this.priceTouched) {
 				// 切到新股标：重新预填行情价（未手动改过才填）
 				void this.prefillPrice(t);
 			} else if (prevKind === 'stock' && t.kind === 'fund') {
@@ -341,9 +340,9 @@ export class PositionTradeModal extends Modal {
 		this.sellAmountEl = null;
 
 		const isStock = this.target?.kind === 'stock';
-		const allowDividend = this.target?.kind === 'fund';
+		const allowDividend = this.target != null;
 
-		// 类型：编辑场景锁定为静态文本；否则下拉（分红仅基金目标出现）
+		// 类型：编辑场景锁定为静态文本；否则下拉（选中目标后均可选分红）
 		if (this.typeLocked) {
 			const label =
 				this.type === 'buy' ? '买入（加仓）' : this.type === 'sell' ? '卖出（减仓）' : '分红（现金到账）';
@@ -376,7 +375,17 @@ export class PositionTradeModal extends Modal {
 			});
 		});
 
-		if (isStock) {
+		// 分红只填金额：基金与股票同口径，不涉及数量与价格
+		if (this.type === 'dividend') {
+			new Setting(form).setName('金额（元）').addText((text) =>
+				text
+					.setPlaceholder('分红到账金额')
+					.setValue(this.amount ? String(this.amount) : '')
+					.onChange((v) => {
+						this.amount = Number(v) || 0;
+					}),
+			);
+		} else if (isStock) {
 			const qtySetting = new Setting(form).setName('数量（股）').setDesc(this.sharesHintText());
 			this.sharesHintEl = qtySetting.descEl;
 			qtySetting.addText((text) =>
@@ -408,15 +417,6 @@ export class PositionTradeModal extends Modal {
 					.onChange((v) => {
 						this.amount = Number(v) || 0;
 						this.updateSharesHint();
-					}),
-			);
-		} else if (this.type === 'dividend') {
-			new Setting(form).setName('金额（元）').addText((text) =>
-				text
-					.setPlaceholder('分红到账金额')
-					.setValue(this.amount ? String(this.amount) : '')
-					.onChange((v) => {
-						this.amount = Number(v) || 0;
 					}),
 			);
 		} else {
@@ -468,14 +468,14 @@ export class PositionTradeModal extends Modal {
 			new Notice('日期格式不正确，请重新选择日期');
 			return;
 		}
-		if (this.target.kind === 'stock') {
-			if (this.shares <= 0 || this.price <= 0) {
-				new Notice('请填写数量与价格');
-				return;
-			}
-		} else if (this.type === 'dividend') {
+		if (this.type === 'dividend') {
 			if (this.amount <= 0) {
 				new Notice('请填写分红金额');
+				return;
+			}
+		} else if (this.target.kind === 'stock') {
+			if (this.shares <= 0 || this.price <= 0) {
+				new Notice('请填写数量与价格');
 				return;
 			}
 		} else if (this.type === 'sell') {
@@ -504,15 +504,17 @@ export class PositionTradeModal extends Modal {
 		const tx: Transaction = {
 			type: this.type,
 			date: this.date,
-			// 股票金额 = 数量 × 价格；基金买入/分红按录入值（买入份额留空，由「金额 ÷ 净值」补全）；
-			// 卖出金额留空，由「份额 × 当日净值」补全
+			// 分红金额恒按录入值（股票分红没有数量与价格）；股票买入/卖出金额 = 数量 × 价格；
+			// 基金买入按录入值（份额留空，由「金额 ÷ 净值」补全）；卖出金额留空，由「份额 × 当日净值」补全
 			amount:
-				this.target.kind === 'stock'
-					? this.shares * this.price
-					: this.type === 'sell'
-						? 0
-						: this.amount,
-			shares: this.shares,
+				this.type === 'dividend'
+					? this.amount
+					: this.target.kind === 'stock'
+						? this.shares * this.price
+						: this.type === 'sell'
+							? 0
+							: this.amount,
+			shares: this.type === 'dividend' ? 0 : this.shares,
 			fee: this.fee,
 			note: this.note,
 		};

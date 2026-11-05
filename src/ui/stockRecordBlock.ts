@@ -10,6 +10,7 @@ import {
 	STOCK_RECORD_BLOCK_LANG,
 	type RecordParse,
 	type Transaction,
+	type TxType,
 } from '../types';
 import { readStockNoteInfo } from '../utils/frontmatter';
 import { appendRecords, parseRecordSource, removeRecordAtLine, replaceRecordAtLine } from '../utils/recordParser';
@@ -168,7 +169,7 @@ function stockTarget(props: StockBlockProps): PositionTarget {
 	};
 }
 
-/** 加仓 / 减仓快捷按钮（图标按钮，打开统一弹窗，价格默认预填最新价） */
+/** 加仓 / 减仓 / 分红快捷按钮（图标按钮，打开统一弹窗，价格默认预填最新价） */
 function addActionButtons(plugin: InvestmentPlugin, el: HTMLElement, props: StockBlockProps): void {
 	const row = el.createDiv({ cls: 'inv-actions' });
 
@@ -181,7 +182,7 @@ function addActionButtons(plugin: InvestmentPlugin, el: HTMLElement, props: Stoc
 		b.addEventListener('click', onClick);
 	};
 
-	const openRecord = (type: 'buy' | 'sell'): void => {
+	const openRecord = (type: TxType): void => {
 		new PositionTradeModal(
 			plugin,
 			{
@@ -201,6 +202,7 @@ function addActionButtons(plugin: InvestmentPlugin, el: HTMLElement, props: Stoc
 	};
 	iconBtn('plus', '加仓', 'inv-buy', () => openRecord('buy'));
 	iconBtn('minus', '减仓', 'inv-sell', () => openRecord('sell'));
+	iconBtn('gift', '分红', 'inv-div', () => openRecord('dividend'));
 }
 
 /** K 线走势卡片：日线 / 周线 / 月线切换，K 线上标记实际买入/卖出点 */
@@ -295,23 +297,21 @@ function renderStockTable(plugin: InvestmentPlugin, el: HTMLElement, props: Stoc
 			setIcon(b, icon);
 			b.addEventListener('click', onClick);
 		};
-		// 分红行没有数量与价格，「金额 ÷ 数量」算不出回显价，故只给删除
-		if (tx.type !== 'dividend') {
-			mkOp('pencil', '编辑', () => openEditModal(plugin, props, tx, lineIdx));
-		}
+		// 三种记录均可编辑；分红行按金额回填，买卖行按「金额 ÷ 数量」反算价格
+		mkOp('pencil', '编辑', () => openEditModal(plugin, props, tx, lineIdx));
 		mkOp('trash', '删除', () => confirmDeleteRecord(plugin, props, tx, lineIdx, badge.text));
 	}
 }
 
-/** 打开统一弹窗编辑某行记录（目标与类型锁定，价格按「金额 ÷ 数量」回显，保存为替换该行） */
+/** 打开统一弹窗编辑某行记录（目标与类型锁定，买卖价格按「金额 ÷ 数量」回显、分红按金额回填，保存为替换该行） */
 function openEditModal(
 	plugin: InvestmentPlugin,
 	props: StockBlockProps,
 	tx: Transaction,
 	lineIdx: number,
 ): void {
-	// 记录行只存金额与数量，弹窗在股票目标下按「数量 × 价格」反算金额，故必须传 price；
-	// 传 amount 不会生效，且 price 为 0 时会被行情价异步预填覆盖掉原值
+	// 记录行只存金额与数量：买卖行需按「数量 × 价格」反算金额，故必须传 price；
+	// 分红行金额独立存在，传 amount，且弹窗在分红类型下不会拉行情预填价格
 	const price = tx.shares > 0 ? Math.round((tx.amount / tx.shares) * 100) / 100 : 0;
 	new PositionTradeModal(
 		plugin,
@@ -321,6 +321,7 @@ function openEditModal(
 			type: tx.type,
 			typeLocked: true,
 			date: tx.date,
+			amount: tx.amount,
 			shares: tx.shares,
 			price,
 			fee: tx.fee,

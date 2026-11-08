@@ -91,11 +91,12 @@ export class ImportModal extends Modal {
 			const preview = summaryEl.createDiv({ cls: 'inv-import-preview' });
 			result.transactions.slice(0, 10).forEach((t) => {
 				const line = preview.createDiv({ cls: 'inv-preview-row' });
-				const typeSpan = line.createSpan({
-					text: t.type === 'buy' ? '买入' : '卖出',
-					cls: `inv-badge ${t.type === 'buy' ? 'inv-badge-buy' : 'inv-badge-sell'}`,
-				});
-				void typeSpan;
+				const badge = t.type === 'buy'
+					? { text: '买入', cls: 'inv-badge-buy' }
+					: t.type === 'sell'
+						? { text: '卖出', cls: 'inv-badge-sell' }
+						: { text: '分红', cls: 'inv-badge-div' };
+				line.createSpan({ text: badge.text, cls: `inv-badge ${badge.cls}` });
 				line.createSpan({ text: ` ${t.date}  ` });
 				if (t.amount > 0) line.createSpan({ text: fmtMoney(t.amount) });
 				if (t.shares > 0) line.createSpan({ text: ` ${t.shares} 份` });

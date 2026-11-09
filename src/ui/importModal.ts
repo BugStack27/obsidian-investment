@@ -32,7 +32,7 @@ export class ImportModal extends Modal {
 
 		new Setting(contentEl)
 			.setName('粘贴 CSV 或选择文件')
-			.setDesc('支持带表头（如 ID,fundcode,type,date,amount,shares,fee）或不带表头，仅提取关键字段。')
+			.setDesc('支持带表头（如 日期,方向,金额,份额,手续费,备注 或 type,date,amount,shares,fee）或不带表头，仅提取关键字段。')
 			.addButton((btn) =>
 				btn.setButtonText('选择文件').onClick(() => this.chooseFile()),
 			);

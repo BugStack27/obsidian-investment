@@ -24,16 +24,27 @@ const HEADER_ALIAS: Record<string, string> = {
 /** 无表头时的固定列顺序 */
 const POSITIONAL_KEYS = ['type', 'date', 'amount', 'shares', 'fee', 'note'] as const;
 
+/** 表头至少命中这么多个已知列名才判为表头，避免把数据行（如备注含「金额」）误判 */
+const HEADER_MIN_HITS = 2;
+
+function headerKey(cell: string): string | null {
+	return HEADER_ALIAS[cell.trim().toLowerCase()] ?? null;
+}
+
 function looksLikeHeader(cells: string[]): boolean {
-	const norm = cells.map((c) => c.trim().toLowerCase());
-	return norm.includes('type') || norm.includes('date') || norm.includes('shares');
+	const keys = new Set<string>();
+	for (const c of cells) {
+		const key = headerKey(c);
+		if (key !== null) keys.add(key);
+	}
+	return keys.size >= HEADER_MIN_HITS;
 }
 
 function buildHeaderMap(cells: string[]): Record<string, number> | null {
 	const map: Record<string, number> = {};
 	for (let i = 0; i < cells.length; i++) {
-		const key = HEADER_ALIAS[cells[i]!.trim().toLowerCase()];
-		if (key && !(key in map)) map[key] = i;
+		const key = headerKey(cells[i]!);
+		if (key !== null && !(key in map)) map[key] = i;
 	}
 	return Object.keys(map).length > 0 ? map : null;
 }

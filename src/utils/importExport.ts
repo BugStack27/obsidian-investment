@@ -149,12 +149,16 @@ export function dedupeTransactions(existing: Transaction[], incoming: Transactio
 	});
 }
 
-/** 导出：将交易记录序列化为带表头的 CSV（含关键字段） */
-export function transactionsToCsv(transactions: Transaction[], fundCode?: string): string {
-	const header = fundCode ? 'fundCode,' : '';
+/** 导出：将交易记录序列化为带表头的 CSV（含关键字段）；传入 code 时附带代码列，列名默认 fundCode */
+export function transactionsToCsv(
+	transactions: Transaction[],
+	code?: string,
+	codeHeader = 'fundCode',
+): string {
+	const header = code ? `${codeHeader},` : '';
 	const rows = [`${header}type,date,amount,shares,fee,note`];
 	for (const t of transactions) {
-		const cells = fundCode ? [fundCode] : [];
+		const cells = code ? [code] : [];
 		cells.push(t.type, t.date, fmt(t.amount), fmt(t.shares), fmt(t.fee), t.note);
 		rows.push(stringifyCsv(cells));
 	}

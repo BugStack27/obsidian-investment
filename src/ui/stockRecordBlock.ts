@@ -34,6 +34,7 @@ import {
 } from './charts/echartsInit';
 import { PositionTradeModal } from './positionTradeModal';
 import { ConfirmModal } from './confirmModal';
+import { downloadCsv, transactionsToCsv } from '../utils/importExport';
 import { sumStockHoldShares } from '../services/positionHolding';
 import { summarizeStockHolding } from '../services/stockPortfolio';
 import type { PositionTarget } from '../services/positionTargets';
@@ -203,6 +204,16 @@ function addActionButtons(plugin: InvestmentPlugin, el: HTMLElement, props: Stoc
 	iconBtn('plus', '加仓', 'inv-buy', () => openRecord('buy'));
 	iconBtn('minus', '减仓', 'inv-sell', () => openRecord('sell'));
 	iconBtn('gift', '分红', 'inv-div', () => openRecord('dividend'));
+
+	iconBtn('download', '导出全部记录', '', () => {
+		const csv = transactionsToCsv(
+			props.parsed.entries.map((e) => e.tx),
+			props.code,
+			'stockCode',
+		);
+		downloadCsv(`${props.code}-records.csv`, csv);
+		new Notice('已导出 CSV 文件');
+	});
 }
 
 /** K 线走势卡片：日线 / 周线 / 月线切换，K 线上标记实际买入/卖出点 */

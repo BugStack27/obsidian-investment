@@ -59,7 +59,7 @@ export function xirr(cashflows: CashFlow[]): number | null {
 
 /**
  * 由解析后的交易 + 期末市值构建现金流序列。
- * - 买入 → 负现金流；卖出/分红 → 正现金流；期末市值（持有份额 > 0）→ 期末正现金流
+ * - 买入 → 负现金流（金额 + 手续费）；卖出/分红 → 正现金流（金额 − 手续费）；期末市值（持有份额 > 0）→ 期末正现金流
  */
 export function buildCashFlows(
 	resolved: ResolvedTransaction[],
@@ -70,9 +70,10 @@ export function buildCashFlows(
 	const flows: CashFlow[] = [];
 	for (const t of resolved) {
 		if (t.pending) continue;
-		if (t.type === 'buy') flows.push({ date: t.date, amount: -t.amount });
-		else if (t.type === 'sell') flows.push({ date: t.date, amount: t.amount });
-		else if (t.type === 'dividend') flows.push({ date: t.date, amount: t.amount });
+		const fee = t.fee || 0;
+		if (t.type === 'buy') flows.push({ date: t.date, amount: -(t.amount + fee) });
+		else if (t.type === 'sell') flows.push({ date: t.date, amount: t.amount - fee });
+		else if (t.type === 'dividend') flows.push({ date: t.date, amount: t.amount - fee });
 	}
 	if (holdShares > 0 && holdAmount > 0 && navDate) {
 		flows.push({ date: navDate, amount: holdAmount });

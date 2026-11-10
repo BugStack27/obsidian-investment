@@ -66,7 +66,8 @@ export function calcCompareSeries(
 		dcaShares.push(accShares);
 	}
 
-	// 实际：沿交易日推进买入/卖出/分红，维护现金流（买入-、卖出/分红+），并跟踪累计份额
+	// 实际：沿交易日推进买入/卖出/分红，维护现金流（买入-、卖出/分红+），并跟踪累计份额；
+	// 手续费按实际资金流处理：买入计入成本，卖出与分红冲减回款
 	const txns = resolved
 		.filter(t => !t.pending && (t.type === 'buy' || t.type === 'sell' || t.type === 'dividend'))
 		.sort((a, b) => a.date.localeCompare(b.date));
@@ -85,16 +86,17 @@ export function calcCompareSeries(
 		const day = days[i]!;
 		while (txnIdx < txns.length && txns[txnIdx]!.date <= day.date) {
 			const t = txns[txnIdx]!;
+			const fee = t.fee || 0;
 			if (t.type === 'buy') {
 				cumShares += t.shares;
-				cumInvested += t.amount;
-				manualFlows.push({ date: t.date, amount: -t.amount });
+				cumInvested += t.amount + fee;
+				manualFlows.push({ date: t.date, amount: -(t.amount + fee) });
 			} else if (t.type === 'sell') {
 				cumShares -= t.shares;
-				cumInvested -= t.amount;
-				manualFlows.push({ date: t.date, amount: t.amount });
+				cumInvested -= t.amount - fee;
+				manualFlows.push({ date: t.date, amount: t.amount - fee });
 			} else {
-				manualFlows.push({ date: t.date, amount: t.amount });
+				manualFlows.push({ date: t.date, amount: t.amount - fee });
 			}
 			txnIdx++;
 		}

@@ -44,7 +44,10 @@ function findNav(date: string, dates: string[], navByDate: Map<string, number>):
 	return null;
 }
 
-/** 汇总单基金持仓收益（不含管理费/分红，聚焦核心收益口径） */
+/**
+ * 汇总单基金持仓收益。
+ * 手续费按实际资金流处理：买入计入成本，卖出与分红冲减回款。
+ */
 export function summarizeHolding(
 	resolved: ResolvedTransaction[],
 	navHistory: NetWorthRecord[],
@@ -57,17 +60,21 @@ export function summarizeHolding(
 	let firstBuyDate: string | null = null;
 	for (const t of resolved) {
 		if (t.pending) continue;
+		const fee = t.fee || 0;
 		if (t.type === 'buy') {
 			holdShares += t.shares;
-			totalInvested += t.amount;
-			totalBuyCost += t.amount;
+			// 买入手续费计入成本
+			totalInvested += t.amount + fee;
+			totalBuyCost += t.amount + fee;
 			totalBuyShares += t.shares;
 			if (firstBuyDate == null || t.date < firstBuyDate) firstBuyDate = t.date;
 		} else if (t.type === 'sell') {
 			holdShares -= t.shares;
-			totalInvested -= t.amount;
+			// 卖出手续费冲减回款
+			totalInvested -= t.amount - fee;
 		} else if (t.type === 'dividend') {
-			totalDividend += t.amount;
+			// 分红手续费冲减到账金额
+			totalDividend += t.amount - fee;
 		}
 	}
 	if (holdShares < 0) holdShares = 0;

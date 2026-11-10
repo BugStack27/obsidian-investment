@@ -8,9 +8,9 @@ import { fetchStockQuote, type StockQuote } from './stockSdk';
 
 export interface StockHoldingSummary {
 	holdShares: number;
-	/** 加权平均买入成本（元/股） */
+	/** 加权平均买入成本（元/股，含买入手续费） */
 	avgCostPerShare: number;
-	/** 成本基准 = 均价 × 持仓数量（仅剩余持仓） */
+	/** 成本基准 = 均价 × 持仓数量（仅剩余持仓，含买入手续费） */
 	costBasis: number;
 	/** 持仓市值 = 持仓数量 × 最新价 */
 	holdAmount: number;
@@ -18,13 +18,13 @@ export interface StockHoldingSummary {
 	holdingProfit: number;
 	/** 持仓盈亏率（小数） */
 	holdingProfitRate: number;
-	/** 累计买入金额（含已卖出部分对应的成本） */
+	/** 累计买入金额（含手续费，含已卖出部分对应的成本） */
 	totalBuyCost: number;
-	/** 累计卖出回款 */
+	/** 累计卖出回款（已扣手续费） */
 	totalSellAmount: number;
-	/** 累计分红 */
+	/** 累计分红（已扣手续费） */
 	totalDividend: number;
-	/** 总收益 = 市值 − 净投入（买入 − 卖出）+ 分红，含已兑现的卖出收益 */
+	/** 总收益 = 市值 − 净投入（买入 − 卖出）+ 分红，全部扣减手续费，含已兑现的卖出收益 */
 	totalProfit: number;
 	/** 总收益率 = 总收益 ÷ 累计买入金额（与基金侧同口径） */
 	totalProfitRate: number;
@@ -36,6 +36,7 @@ export interface StockHoldingSummary {
  * - **总口径**（总收益）= 市值 − 净投入 + 分红，把已卖出部分的回款一并累计进来，与基金侧 `summarizeHolding` 一致。
  * 两套口径的分母也不同：持仓盈亏率用成本基准，总收益率用累计买入金额——净投入做分母时，
  * 卖出回款已体现在收益金额里，减仓后收益率会虚高、清仓时分母归零。
+ * 手续费按实际资金流处理：买入计入成本，卖出与分红冲减回款。
  */
 export function summarizeStockHolding(
 	entries: RecordParse['entries'],
@@ -46,13 +47,17 @@ export function summarizeStockHolding(
 	let totalSellAmount = 0;
 	let totalDividend = 0;
 	for (const { tx } of entries) {
+		const fee = tx.fee || 0;
 		if (tx.type === 'buy' && tx.shares > 0) {
-			totalBuyCost += tx.amount;
+			// 买入手续费计入成本
+			totalBuyCost += tx.amount + fee;
 			totalBuyShares += tx.shares;
 		} else if (tx.type === 'sell' && tx.shares > 0) {
-			totalSellAmount += tx.amount;
+			// 卖出手续费冲减回款
+			totalSellAmount += tx.amount - fee;
 		} else if (tx.type === 'dividend') {
-			totalDividend += tx.amount;
+			// 分红手续费冲减到账金额
+			totalDividend += tx.amount - fee;
 		}
 	}
 	const holdShares = sumStockHoldShares(entries);

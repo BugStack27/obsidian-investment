@@ -39,21 +39,21 @@ export interface NetWorthRecord {
 /** 单基金持仓收益汇总 */
 export interface HoldingSummary {
 	holdShares: number;
-	/** 累计投入 = Σ买入金额 − Σ卖出金额 */
+	/** 累计投入 = Σ(买入金额 + 手续费) − Σ(卖出金额 − 手续费) */
 	totalInvested: number;
 	/** 持仓市值 = 持有份额 × 最新净值 */
 	holdAmount: number;
-	/** 总收益 = 持仓市值 − 累计投入 + 分红 */
+	/** 总收益 = 持仓市值 − 累计投入 + 净分红（已扣手续费） */
 	totalProfit: number;
-	/** 累计分红（元） */
+	/** 累计分红（已扣分红手续费） */
 	totalDividend: number;
-	/** 总收益率（小数）= 总收益 / 累计买入成本 */
+	/** 总收益率（小数）= 总收益 / 累计买入成本（含买入手续费） */
 	totalProfitRate: number;
 	/** 今日涨跌幅（小数） */
 	todayChange: number;
 	/** 今日盈亏（元） */
 	todayProfit: number;
-	/** 加权平均持仓成本（元/份） */
+	/** 加权平均持仓成本（元/份，含买入手续费） */
 	avgCostPerShare: number;
 	/** 至今浮盈（未实现）= 市值 − 加权成本 × 持有份额 */
 	holdingProfit: number;

@@ -38,7 +38,7 @@ export class ImportModal extends Modal {
 			);
 
 		this.textEl = contentEl.createEl('textarea', {
-			attr: { placeholder: 'type,date,amount,shares,fee\nbuy,2026-05-14,800', class: 'inv-import-text', rows: '8' },
+			attr: { placeholder: 'Type,date,amount,shares,fee\nbuy,2026-05-14,800', class: 'inv-import-text', rows: '8' },
 		});
 		this.textEl.addEventListener('input', () => this.reparse());
 

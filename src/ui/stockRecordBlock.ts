@@ -241,7 +241,7 @@ function renderKlineCard(el: HTMLElement, code: string, transactions: Transactio
 		chart = null;
 		body.empty();
 		if (points.length === 0) {
-			body.createEl('p', { text: '暂无K线数据', cls: 'inv-chart-empty' });
+			body.createEl('p', { text: '暂无走势数据', cls: 'inv-chart-empty' });
 			return;
 		}
 		chart = initChart(body, buildStockKlineOption(points, transactions));

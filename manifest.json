@@ -1,7 +1,7 @@
 {
 	"id": "investment-tracker",
 	"name": "Investment Tracker",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"minAppVersion": "1.7.2",
 	"description": "Record fund and A-share trades in notes as code blocks, render them as editable tables, and compute holdings, profit and net-value charts.",
 	"author": "bugstack27",

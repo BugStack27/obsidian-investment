@@ -371,9 +371,8 @@ async function openTradeModal(
 			resolveAvailableShares: async () =>
 				props.parsed.entries.length > 0 ? (props.summary?.holdShares ?? null) : null,
 		},
-		(tx) => {
-			props.onMutate((inner) => appendRecords(inner, [tx])).catch(() => undefined);
-		},
+		// 返回写回 Promise：弹窗的「保存并继续」要等写回成功才清空表单
+		(tx) => props.onMutate((inner) => appendRecords(inner, [tx])),
 	).open();
 }
 
@@ -401,9 +400,7 @@ async function openEditModal(
 			resolveAvailableShares: async () =>
 				(props.summary?.holdShares ?? 0) + (tx.type === 'sell' ? tx.shares : 0),
 		},
-		(updated) => {
-			props.onMutate((inner) => replaceRecordAtLine(inner, lineIdx, updated) ?? inner).catch(() => undefined);
-		},
+		(updated) => props.onMutate((inner) => replaceRecordAtLine(inner, lineIdx, updated) ?? inner),
 	).open();
 }
 

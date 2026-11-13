@@ -1913,6 +1913,13 @@
 	border-bottom: none;
 }
 
+/* 连续录入：「保存 / 保存并继续」并排，窄窗口允许换行 */
+.inv-position-actions .setting-item-control {
+	gap: 8px;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+}
+
 /* 日期控件：原生 date 输入，固定宽度以与其余输入框对齐 */
 .inv-position-form .inv-date-input {
 	width: 160px;

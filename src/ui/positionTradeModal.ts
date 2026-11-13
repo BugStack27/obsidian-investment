@@ -35,12 +35,18 @@ const KIND_LABEL: Record<PositionTarget['kind'], string> = { fund: '基金', sto
  * - 类型：买入（加仓）/ 卖出（减仓）/ 分红（现金到账，基金与股票目标均可）；
  * - 字段组按目标 kind 与类型切换：基金 = 金额 + 份额（分红只填金额）；股票 = 数量 + 价格（分红只填金额）；
  * - 基金卖出时按当日估值（缺失时回退最新净值）实时预估到账金额；
- * - 保存经 `onSave(tx, target)` 交回调用方写盘（新增 = 追加记录行，编辑 = 替换该行）。
+ * - 保存经 `onSave(tx, target)` 交回调用方写盘（新增 = 追加记录行，编辑 = 替换该行）；
+ *   返回的 Promise 代表写回完成，失败须 reject——「保存并继续」只在写回成功后清空表单。
  */
 export class PositionTradeModal extends Modal {
 	private readonly plugin: InvestmentPlugin;
 	private readonly onSave: (tx: Transaction, target: PositionTarget) => void | Promise<void>;
 	private readonly resolveAvailable: PositionTradeInit['resolveAvailableShares'];
+
+	/** 写回进行中：禁用表单，避免重复提交或清空时抹掉用户刚输入的内容 */
+	private saving = false;
+	/** 行情预填序号：连续录入清空表单后让在途的预填失效，避免旧价格回填 */
+	private priceSeq = 0;
 
 	private target: PositionTarget | null;
 	private readonly targetLocked: boolean;
@@ -199,9 +205,10 @@ export class PositionTradeModal extends Modal {
 
 	/** 拉取股票最新价预填成交价（60s 缓存）；目标已切换或用户已手输时放弃 */
 	private async prefillPrice(t: PositionTarget): Promise<void> {
+		const seq = ++this.priceSeq;
 		try {
 			const quote = await fetchStockQuote(t.code);
-			if (this.target !== t || this.priceTouched) return;
+			if (seq !== this.priceSeq || this.target !== t || this.priceTouched) return;
 			if (quote && quote.price > 0) {
 				this.price = quote.price;
 				if (this.priceInput) this.priceInput.value = String(quote.price);
@@ -449,13 +456,27 @@ export class PositionTradeModal extends Modal {
 			}),
 		);
 
-		new Setting(form).addButton((btn) =>
-			btn.setButtonText('保存').setCta().onClick(() => this.save()),
+		const actions = new Setting(form);
+		actions.settingEl.addClass('inv-position-actions');
+		actions.addButton((btn) =>
+			btn.setButtonText('保存').setCta().onClick(() => void this.save(false)),
 		);
+		// 编辑已有记录是「替换该行」，连续录入会变成重复替换，故只在新增场景提供
+		if (!this.typeLocked) {
+			actions.addButton((btn) =>
+				btn.setButtonText('保存并继续').onClick(() => void this.save(true)),
+			);
+		}
 	}
 
-	private save(): void {
-		if (!this.target) {
+	/**
+	 * 保存一条记录。`continueAfter` 为「保存并继续」：写回成功后清空录入内容，
+	 * 保留日期 / 类型 / 标的，弹窗继续打开供录入下一条；写回失败一律保留现场。
+	 */
+	private async save(continueAfter: boolean): Promise<void> {
+		if (this.saving) return;
+		const target = this.target;
+		if (!target) {
 			new Notice('请先选择基金/股票');
 			return;
 		}
@@ -473,7 +494,7 @@ export class PositionTradeModal extends Modal {
 				new Notice('请填写分红金额');
 				return;
 			}
-		} else if (this.target.kind === 'stock') {
+		} else if (target.kind === 'stock') {
 			if (this.shares <= 0 || this.price <= 0) {
 				new Notice('请填写数量与价格');
 				return;
@@ -509,7 +530,7 @@ export class PositionTradeModal extends Modal {
 			amount:
 				this.type === 'dividend'
 					? this.amount
-					: this.target.kind === 'stock'
+					: target.kind === 'stock'
 						? this.shares * this.price
 						: this.type === 'sell'
 							? 0
@@ -518,7 +539,49 @@ export class PositionTradeModal extends Modal {
 			fee: this.fee,
 			note: this.note,
 		};
-		void this.onSave(tx, this.target);
-		this.close();
+		this.setSaving(true);
+		try {
+			// 等写回真正完成再决定「关闭」还是「清空继续」，避免写回失败时输入已丢失
+			await this.onSave(tx, target);
+		} catch {
+			// 失败提示由调用方给出；保留输入与弹窗，便于重试
+			return;
+		} finally {
+			this.setSaving(false);
+		}
+		if (continueAfter) {
+			this.resetForNext(tx);
+		} else {
+			this.close();
+		}
+	}
+
+	/** 写回期间禁用表单与改选标的按钮；弹窗关闭或表单重建后自然恢复 */
+	private setSaving(busy: boolean): void {
+		this.saving = busy;
+		for (const root of [this.formEl, this.targetRowEl]) {
+			root
+				?.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement>('input, select, button')
+				.forEach((el) => {
+					el.disabled = busy;
+				});
+		}
+	}
+
+	/** 连续录入：只清空录入值，日期 / 类型 / 标的保持不变 */
+	private resetForNext(tx: Transaction): void {
+		this.amount = 0;
+		this.shares = 0;
+		this.price = 0;
+		this.fee = 0;
+		this.note = '';
+		this.priceTouched = false;
+		this.priceSeq++; // 丢弃在途的行情预填，避免清空后旧价格回填
+		// 刚卖出一笔后本地扣减可卖上限：调用方持有的是写回前的持仓快照，重新解析会拿回旧值
+		if (tx.type === 'sell' && typeof this.available === 'number') {
+			this.available = Math.max(0, this.available - tx.shares);
+		}
+		this.renderForm();
+		this.formEl?.querySelector<HTMLInputElement>('input:not([type="date"])')?.focus();
 	}
 }

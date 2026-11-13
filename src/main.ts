@@ -87,14 +87,16 @@ export default class InvestmentPlugin extends Plugin {
 					async (tx, t) => {
 						const file = this.app.vault.getAbstractFileByPath(t.filePath);
 						if (!(file instanceof TFile)) {
-							new Notice('找不到笔记文件，无法写入记录');
-							return;
+							const msg = '找不到笔记文件，无法写入记录';
+							new Notice(msg);
+							throw new Error(msg); // 让弹窗知道写回失败，保留已填内容
 						}
 						try {
 							await appendTxToFile(this.app, file, [tx], t.kind === 'stock' ? STOCK_RECORD_BLOCK_LANG : RECORD_BLOCK_LANG);
 							new Notice(`已记录：${t.name}`);
 						} catch (e) {
 							new Notice(`记录失败：${e instanceof Error ? e.message : String(e)}`);
+							throw e;
 						}
 					},
 				).open();

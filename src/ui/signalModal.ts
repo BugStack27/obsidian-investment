@@ -228,19 +228,22 @@ export class SignalModal extends Modal {
 				type: s.type === 'buy' ? 'buy' : 'sell',
 				resolveAvailableShares: (t) => resolveAvailableShares(this.plugin.app, t),
 			},
-			(tx) => {
+			async (tx) => {
 				const file = this.plugin.app.vault.getAbstractFileByPath(s.filePath);
 				if (!(file instanceof TFile)) {
-					new Notice('找不到基金文件，无法写入交易记录');
-					return;
+					const msg = '找不到基金文件，无法写入交易记录';
+					new Notice(msg);
+					throw new Error(msg); // 让弹窗知道写回失败，保留已填内容
 				}
-				void appendTxToFile(this.plugin.app, file, [tx])
-					.then(() => {
-						// 写回后标记该信号已确认；持仓变化由文件的 change 事件驱动数据流刷新
-						this.plugin.markSignal(s.code, 'confirmed');
-						this.renderList();
-					})
-					.catch((e) => new Notice(`记录买入/卖出失败：${e instanceof Error ? e.message : String(e)}`));
+				try {
+					await appendTxToFile(this.plugin.app, file, [tx]);
+					// 写回后标记该信号已确认；持仓变化由文件的 change 事件驱动数据流刷新
+					this.plugin.markSignal(s.code, 'confirmed');
+					this.renderList();
+				} catch (e) {
+					new Notice(`记录买入/卖出失败：${e instanceof Error ? e.message : String(e)}`);
+					throw e;
+				}
 			},
 		).open();
 	}

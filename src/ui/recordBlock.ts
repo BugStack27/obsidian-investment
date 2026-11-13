@@ -341,8 +341,10 @@ function addActionButtons(el: HTMLElement, plugin: InvestmentPlugin, props: Bloc
 				new Notice('没有新记录（已全部存在）');
 				return;
 			}
-			props.onMutate((inner) => appendRecords(inner, added)).catch(() => undefined);
-			new Notice(`已导入 ${added.length} 条记录`);
+			props
+				.onMutate((inner) => appendRecords(inner, added))
+				.then(() => new Notice(`已导入 ${added.length} 条记录`))
+				.catch(() => undefined); // 写回失败已由 onMutate 内部提示
 		}).open();
 	});
 
